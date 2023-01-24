@@ -1,0 +1,64 @@
+---
+ - hosts: vm_servers
+
+   tasks:
+    - name: Ensure the jenkins apt repository key is installed
+      apt_key: 
+        url=https://pkg.jenkins.io/debian-stable/jenkins.io.key 
+        state=present
+      become: yes
+
+    - name: Ensure the jenkins repository is configured
+      apt_repository: 
+        repo='deb https://pkg.jenkins.io/debian-stable binary/' 
+        state=present
+      become: yes
+
+    - name: Download linuxuprising/java ppa apt key
+      apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: 1CC3D16E460A94EE17FE581CEA8CACC073C3DB2A
+
+    - name: Ensure that apt java repository is intalled
+      apt_repository:
+        repo='deb http://ppa.launchpad.net/linuxuprising/java/ubuntu xenial main'
+        filename="oracle_java"
+        state=present
+      become: yes
+
+    - name: Update APT packege manager repositorioes cache
+      apt:
+        update_cache=yes
+      become: yes
+
+    - name: Accept Oracle Java licence
+      debconf:
+        name: oracle-java17-installer
+        question: shared/accepted-oracle-license-v1-2
+        value: "true"
+        vtype: select
+
+    - name: Install Java 17
+      apt: 
+        name=oracle-java17-installer
+        state=present
+      become: yes
+    
+    - name: Set as default Java 17
+      apt:
+        name=oracle-java17-set-default
+        state=present
+      become: yes
+
+    - name: Install Jenkins
+      apt: 
+        name=jenkins
+        state=present 
+        update_cache=yes
+      become: yes
+
+    - name: Ensure jenkins is running
+      service: 
+        name=jenkins 
+        state=started
+
