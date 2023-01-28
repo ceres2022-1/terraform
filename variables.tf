@@ -46,3 +46,9 @@ variable "vm_size" {}
 variable "vm_computer_name" {}
 variable "vm_admin_username" {}
 variable "vm_admin_password" {}
+
+# Additional Kubernetes Service
+variable "aks_additional_name" {}
+variable "aks_additional_vm_size" {}
+variable "aks_additional_node_count" {}
+variable "aks_additional_max_pods" {}

@@ -59,6 +59,20 @@ resource "azurerm_kubernetes_cluster" "aks-demo" {
   }
 }
 
+
+resource "azurerm_kubernetes_cluster_node_pool" "aks-additional-pool" {
+  name                  = var.aks_additional_name
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks-demo.id
+  vm_size               = var.aks_additional_vm_size
+  node_count            = var.aks_additional_node_count
+  max_pods              = var.aks_additional_max_pods
+  vnet_subnet_id        = azurerm_subnet.subnet-demo.id
+
+  tags = {
+    "typeOfCluster" = "Adicional"
+  }
+}
+
 resource "azurerm_public_ip" "pip-demo" {
   name                = var.pip_name
   resource_group_name = azurerm_resource_group.rg-demo.name
@@ -104,18 +118,4 @@ resource "azurerm_linux_virtual_machine" "vm-demo" {
   admin_username                  = var.vm_admin_username
   admin_password                  = var.vm_admin_password
   disable_password_authentication = false
-
-}
-
-output "public-ip" {
-  value = azurerm_public_ip.pip-demo.ip_address
-}
-
-output "username" {
-  value = azurerm_linux_virtual_machine.vm-demo.admin_username
-}
-
-output "password" {
-  sensitive = true
-  value     = azurerm_linux_virtual_machine.vm-demo.admin_password
 }
